@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Post</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Create Post</h1>
+        <form id="postForm">
+            @csrf
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea id="content" name="content" class="form-control" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="tags">Tags</label>
+                <div id="tagsWrapper">
+                    <input type="text" name="tags[]" class="form-control mb-2">
+                </div>
+                <button type="button" class="btn btn-secondary" id="addTag">Add Tag</button>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#addTag').click(function () {
+                $('#tagsWrapper').append('<input type="text" name="tags[]" class="form-control mb-2">');
+            });
+
+            $('#postForm').submit(function (event) {
+                event.preventDefault();
+
+                const formData = $(this).serializeArray();
+                const data = {
+                    title: formData.find(field => field.name === 'title').value,
+                    content: formData.find(field => field.name === 'content').value,
+                    tags: formData.filter(field => field.name === 'tags[]').map(field => field.value)
+                };
+
+                $.ajax({
+                    url: '{{ url("/api/posts") }}',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        alert('Post created successfully!');
+                        console.log(response);
+                    },
+                    error: function (response) {
+                        alert('Error creating post.');
+                        console.error(response);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
