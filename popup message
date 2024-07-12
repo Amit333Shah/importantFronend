@@ -1,0 +1,122 @@
+<!-- Main view content -->
+<button id="addTransactionBtn" class="btn btn-primary">Add Transaction</button>
+
+<!-- Popup form -->
+<div id="popupForm" class="popup-form">
+    <div class="popup-content">
+        <span class="close">&times;</span>
+        <h2>Add Transaction</h2>
+        <form id="transactionForm" action="{{ route('wallet.transaction') }}" method="POST">
+            @csrf
+            <input type="hidden" name="name_id" value="{{ $nameId }}">
+            <div class="form-group">
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="type">Type:</label>
+                <select id="type" name="type" class="form-control" required>
+                    <option value="debit">Debit</option>
+                    <option value="credit">Credit</option>
+                </select>
+            </div>
+            <button type="submit" id="submitTransaction" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript to show/hide popup and handle AJAX submission -->
+<script>
+    // Get the popup form
+    var popup = document.getElementById('popupForm');
+
+    // Get the button that opens the popup
+    var btn = document.getElementById('addTransactionBtn');
+
+    // Get the <span> element that closes the popup
+    var span = document.getElementsByClassName('close')[0];
+
+    // When the user clicks the button, open the popup
+    btn.onclick = function() {
+        popup.style.display = 'block';
+    }
+
+    // When the user clicks on <span> (x), close the popup
+    span.onclick = function() {
+        popup.style.display = 'none';
+    }
+
+    // When the user clicks anywhere outside of the popup, close it
+    window.onclick = function(event) {
+        if (event.target == popup) {
+            popup.style.display = 'none';
+        }
+    }
+
+    // AJAX form submission
+    document.getElementById('transactionForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+        
+        var formData = new FormData(this);
+        
+        // Optional: You can add additional form data if needed
+        // formData.append('key', 'value');
+
+        // AJAX request
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle response data
+            console.log(data);
+            alert(data.message); // Show success or error message
+            popup.style.display = 'none'; // Hide the popup after successful submission
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.'); // Show error message
+        });
+    });
+</script>
+
+<style>
+    /* Popup container */
+    .popup-form {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.4); /* Black with opacity */
+    }
+
+    /* Popup content */
+    .popup-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+        border-radius: 10px;
+    }
+
+    /* Close button */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
