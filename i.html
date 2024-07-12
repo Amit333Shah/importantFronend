@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form</title>
+</head>
+<body>
+    <form>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required><br><br>
+
+        <label for="query">Query Type:</label>
+        <select id="query" name="query" required>
+            <option value="">Select an option</option>
+            <option value="manager">Manager</option>
+            <option value="employee">Employee</option>
+            <option value="seniormanager">Senior Manager</option>
+        </select><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+<script>
+    document.getElementById('email').addEventListener('blur', function() {
+    const email = this.value;
+    const apiURL = `https://api.example.com/validate-email?email=${encodeURIComponent(email)}`;
+
+    fetch(apiURL)
+        .then(response => response.json())
+        .then(data => {
+            const resultElement = document.getElementById('emailValidationResult');
+            // Assuming the response data has a field 'verified' that indicates if the email is valid
+            if (data.verified) {
+                resultElement.textContent = 'Email is valid!';
+                resultElement.style.color = 'green';
+            } else {
+                resultElement.textContent = 'Email is invalid!';
+                resultElement.style.color = 'red';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const resultElement = document.getElementById('emailValidationResult');
+            resultElement.textContent = 'An error occurred while validating the email.';
+            resultElement.style.color = 'red';
+        });
+});
+
+</script>
+</html>
