@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+</head>
+<body>
+    <form id="registrationForm">
+        @csrf
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <span id="emailError" style="color: red;"></span><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+        <span id="passwordError" style="color: red;"></span><br><br>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{{ asset('js/form_validation.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+    // Email validation using regex
+    function isValidEmail(email) {
+        var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+
+    // Live email validation on blur event
+    $("#email").on("blur", function() {
+        var email = $(this).val();
+        if (isValidEmail(email)) {
+            $.ajax({
+                url: '/check-email',
+                type: 'post',
+                data: {
+                    email: email,
+                    _token: $('input[name="_token"]').val()
+                },
+                success: function(response) {
+                    if (response == '1') {
+                        $("#emailError").text("Email is already taken.");
+                    } else {
+                        $("#emailError").text("");
+                    }
+                }
+            });
+        } else {
+            $("#emailError").text("Please enter a valid email address.");
+        }
+    });
+
+    // Live password match validation
+    $("#confirmPassword").on("keyup", function() {
+        var password = $("#password").val();
+        var confirmPassword = $(this).val();
+
+        if (password != confirmPassword) {
+            $("#passwordError").text("Passwords do not match.");
+        } else {
+            $("#passwordError").text("");
+        }
+    });
+
+    // Final form submission validation
+    $("#registrationForm").on("submit", function(event) {
+        var password = $("#password").val();
+        var confirmPassword = $("#confirmPassword").val();
+        var emailError = $("#emailError").text();
+        var passwordError = $("#passwordError").text();
+
+        if (password != confirmPassword || emailError || passwordError) {
+            event.preventDefault();
+        }
+    });
+});
+
+    </script>
+</body>
+</html>
