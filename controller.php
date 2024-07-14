@@ -37,7 +37,7 @@ class EmailController extends Controller
         return redirect()->back()->with('error', 'Department not found.');
     }
 
-    $departmentEmail = $department->email;
+    $uniqueNumber = substr(uniqid(), -6);
 
     // Generate unique number (you can adjust this as needed)
     $uniqueNumber = uniqid();
