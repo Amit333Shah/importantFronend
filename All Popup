@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wallets</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Wallets</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Amount</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($wallets as $wallet)
+                <tr>
+                    <td>{{ $wallet->id }}</td>
+                    <td>{{ $wallet->user_id }}</td>
+                    <td>{{ $wallet->amount }}</td>
+                    <td>{{ $wallet->created_at }}</td>
+                    <td>{{ $wallet->updated_at }}</td>
+                    <td>
+                        <a href="#" class="view-details" data-id="{{ $wallet->id }}" data-toggle="modal" data-target="#walletModal">view</a>
+                        <a href="#" class="open-form" data-id="{{ $wallet->id }}" data-toggle="modal" data-target="#formModal">open form</a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Wallet Details Modal -->
+    <div class="modal fade" id="walletModal" tabindex="-1" role="dialog" aria-labelledby="walletModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="walletModalLabel">Wallet Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="dateFilterForm">
+                        <div class="form-group">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" class="form-control" id="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" class="form-control" id="endDate">
+                        </div>
+                        <button type="button" class="btn btn-primary" id="filterButton">Filter</button>
+                    </form>
+                    <table class="table table-bordered mt-3" id="walletDetailsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User ID</th>
+                                <th>Amount</th>
+                                <th>Created At</th>
+                                <th>Updated At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filtered data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Form Modal -->
+    <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="formModalLabel">New Form</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="newForm">
+                        <input type="hidden" name="wallet_id" id="formWalletId">
+                        <!-- Add your form fields here -->
+                        <div class="form-group">
+                            <label for="fieldName">Field Name</label>
+                            <input type="text" class="form-control" id="fieldName" name="field_name">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('.view-details').on('click', function() {
+                var walletId = $(this).data('id');
+                
+                // Clear previous data
+                $('#walletDetailsTable tbody').empty();
+                
+                // Set current wallet ID for filtering later
+                $('#walletModal').data('wallet-id', walletId);
+            });
+
+            $('#filterButton').on('click', function() {
+                var walletId = $('#walletModal').data('wallet-id');
+                var startDate = $('#startDate').val();
+                var endDate = $('#endDate').val();
+
+                $.ajax({
+                    url: '/wallets/' + walletId + '/transactions',
+                    method: 'GET',
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate
+                    },
+                    success: function(data) {
+                        var rows = '';
+                        data.forEach(function(transaction) {
+                            rows += '<tr>' +
+                                '<td>' + transaction.id + '</td>' +
+                                '<td>' + transaction.user_id + '</td>' +
+                                '<td>' + transaction.amount + '</td>' +
+                                '<td>' + transaction.created_at + '</td>' +
+                                '<td>' + transaction.updated_at + '</td>' +
+                                '</tr>';
+                        });
+                        $('#walletDetailsTable tbody').html(rows);
+                    }
+                });
+            });
+
+            $('.open-form').on('click', function() {
+                var walletId = $(this).data('id');
+                
+                // Set wallet ID in the hidden input of the new form
+                $('#formWalletId').val(walletId);
+            });
+
+            $('#formModal').on('shown.bs.modal', function () {
+                var formWalletId = $('#formWalletId').val();
+                console.log('Form Wallet ID:', formWalletId); // Do something with the form ID
+            });
+        });
+    </script>
+</body>
+</html>
