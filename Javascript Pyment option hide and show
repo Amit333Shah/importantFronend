@@ -49,3 +49,62 @@
     </label>
 </body>
 </html>
+(*  *)
+(*  *)
+(* Second method in this only show online payment and offline paymnet option  *)
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Options</title>
+    <script>
+        function togglePaymentOptions() {
+            const onlinePayment = document.getElementById('onlinePayment');
+            const offlinePayment = document.getElementById('offlinePayment');
+            const onlineOptions = document.getElementById('onlineOptions');
+            const onlineOptionButtons = document.querySelectorAll('input[name="onlineOption"]');
+
+            if (onlinePayment.checked) {
+                onlineOptions.style.display = 'block';
+                onlineOptionButtons.forEach(button => {
+                    button.disabled = false;
+                });
+            } else {
+                onlineOptions.style.display = 'none';
+                onlineOptionButtons.forEach(button => {
+                    button.disabled = true;
+                    button.checked = false;
+                });
+            }
+        }
+
+        window.onload = togglePaymentOptions;
+    </script>
+</head>
+<body>
+    <h2>Select Payment Method</h2>
+    <label>
+        <input type="radio" name="paymentType" id="onlinePayment" value="online" onclick="togglePaymentOptions()">
+        Online Payment
+    </label>
+    <label>
+        <input type="radio" name="paymentType" id="offlinePayment" value="offline" onclick="togglePaymentOptions()">
+        Offline Payment
+    </label>
+
+    <div id="onlineOptions" style="display: none;">
+        <h3>Select Online Payment Option</h3>
+        <label>
+            <input type="radio" name="onlineOption" value="option1" disabled>
+            Option 1
+        </label>
+        <label>
+            <input type="radio" name="onlineOption" value="option2" disabled>
+            Option 2
+        </label>
+        <label>
+            <input type="radio" name="onlineOption" value="option3" disabled>
+            Option 3
+        </label>
+    </div>
+</body>
+</html>
