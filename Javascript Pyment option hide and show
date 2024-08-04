@@ -1,0 +1,51 @@
+(* First method ,  in this method all option show *)
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Options</title>
+    <script>
+        function togglePaymentOptions() {
+            const onlinePayment = document.getElementById('onlinePayment');
+            const onlineOptionButtons = document.querySelectorAll('input[name="onlineOption"]');
+
+            if (onlinePayment.checked) {
+                onlineOptionButtons.forEach(button => {
+                    button.disabled = false;
+                });
+            } else {
+                onlineOptionButtons.forEach(button => {
+                    button.disabled = true;
+                    button.checked = false;
+                });
+            }
+        }
+
+        window.onload = togglePaymentOptions;
+    </script>
+</head>
+<body>
+    <h2>Select Payment Method</h2>
+    <label>
+        <input type="radio" name="paymentType" id="onlinePayment" value="online" onclick="togglePaymentOptions()">
+        Online Payment
+    </label>
+    <label>
+        <input type="radio" name="paymentType" id="offlinePayment" value="offline" onclick="togglePaymentOptions()">
+        Offline Payment
+    </label>
+
+    <h3>Select Online Payment Option</h3>
+    <label>
+        <input type="radio" name="onlineOption" value="option1" disabled>
+        Option 1
+    </label>
+    <label>
+        <input type="radio" name="onlineOption" value="option2" disabled>
+        Option 2
+    </label>
+    <label>
+        <input type="radio" name="onlineOption" value="option3" disabled>
+        Option 3
+    </label>
+</body>
+</html>
